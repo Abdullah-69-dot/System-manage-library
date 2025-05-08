@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="direction: rtl;" class="wrapper">
+
+
+
+
+    <!-- Content Wrapper. Contains page content -->
+    <div   class="content-wrapper">
+      <!-- Content Header (Page header) -->
+  
+  
+      <!--الاحصائيات-->
+      <div class="content">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-header border-0">
+                  <div class="d-flex justify-content-between">
+                    <h3 class="card-title">اجمالي عدد الكتب</h3>                    
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="d-flex">
+                    <p class="d-flex flex-column">
+                      <span class="text-bold text-lg">{{allbooks}}</span>
+                      <span>اجمالي عدد الكتب</span>
+                    </p>  
+                  </div>
+                  <!-- /.d-flex -->
+
+                  <div class="position-relative mb-4">
+                    <canvas id="visitors-chart" height="200"></canvas>
+                  </div>  
+                </div>
+              </div>
+              <!-- /.card -->
+            </div>
+            <!-- /.col-md-6 -->
+            
+            <div class="col-lg-6">
+              <div class="card">
+                <div class="card-header border-0">
+                  <div class="d-flex justify-content-between">
+                    <h3 class="card-title">{{sold.price}}</h3>   
+                  </div>
+                </div>    
+                <div class="card-body">
+                  <div class="d-flex">
+                    <p class="d-flex flex-column">
+                      <span id="totalsalarys" class="text-bold text-lg">$250</span><br></p>
+                  </div>
+                  <!-- /.d-flex -->
+  
+                  <div class="position-relative mb-4">
+                    <canvas id="sales-chart" height="160"></canvas>
+                  </div>
+  
+                  <div class="d-flex flex-row justify-content-end">
+                    <span class="mr-2">
+                      <i class="fas fa-square" style="color: rgba(23, 162, 184, 0.7);"></i> الاربح من بيع الكتب
+                      <p id="soldtotals"></p>     
+                    </span>
+                    <span>
+                      <i class="fas fa-square" style="color: rgba(90, 98, 104, 0.7);"></i> الارباح من استعارة الكتب
+                      <p id="rentedtotals"></p>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+        
+            <!-- /.col-md-6 -->
+          </div>
+          <!-- /.row -->
+  
+          <!-- form add books -->
+          <div class="row m-1 mb-3">   
+            <a href="#bookform" class="btn" style="background-color: rgba(23, 162, 184, 0.7); color: white; border: none;" data-toggle="collapse">+ اضافة كتاب</a>
+          </div>
+          
+          <div id="bookform" class="card collapse" style="border-top: 3px solid rgba(23, 162, 184, 0.7);">
+            <div class="card-header">
+              <h3 class="card-title">اضافة كتاب</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form method="POST" enctype="multipart/form-data"  > 
+              {% csrf_token %}
+              <div class="card-body"> 
+                {{form}}
+                <small id='totalrente' class="form-text text-muted"></small>
+              </div>
+              <!-- /.card-body -->
+              <div class="card-footer">
+                <button type="submit" class="btn" style="background-color: rgba(23, 162, 184, 0.7); color: white; border: none;">اضافة</button>
+              </div>
+            </form>
+          </div>
+  
+                <!-- /.card -->
+          </div>
+          <!-- end form add books -->
+  
+  
+          <!-- تصنيفات-->
+  
+          <div class="row justify-content-center mb-3">
+            <div class="col-md-8">
+              <ul class="nav nav-pills">
+                <li class="nav-item">
+                  <a class="nav-link {% if not current_category %}active{% endif %}" style="background-color: {% if not current_category %}rgba(23, 162, 184, 0.9){% else %}rgba(23, 162, 184, 0.7){% endif %}; color: white; margin-right: 5px;" href="{% url 'index' %}">الكل</a>
+                </li>
+                {% for cat in category %}
+                <li class="nav-item">
+                  <a class="nav-link {% if current_category == cat.id|stringformat:'i' %}active{% endif %}" 
+                     style="background-color: {% if current_category == cat.id|stringformat:'i' %}rgba(23, 162, 184, 0.9){% else %}rgba(23, 162, 184, 0.7){% endif %}; color: white; margin-right: 5px;" 
+                     href="{% url 'index' %}?category={{ cat.id }}">{{ cat.name }}</a>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Modal for adding new category -->
+          <div class="modal fade" id="categoryModal" tabindex="-1" role="dialog" aria-labelledby="categoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="categoryModalLabel">إضافة تصنيف جديد</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form method="POST">
+                  {% csrf_token %}
+                  <div class="modal-body">
+                    {{ catform }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn" style="background-color: rgba(23, 162, 184, 0.7); color: white;">إضافة</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <!-- books -->
+
+          {% for book in books %}
+          {% if forloop.counter0|divisibleby:3 %}
+          <div class="row">
+          {% endif %}
+          <!-- الكتب -->
+              <div id="" class="col-md-4">
+                  <!-- Widget: user widget style 1 -->
+                <div id="" class="card card-widget widget-user ">
+                  <!-- Add the bg color to the header using any of the bg-* classes -->
+                <!-- قائمة منسدلة -->
+                <div style="position: absolute;" class="btn-group">   
+                  <button type="button" class="btn dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="sr-only">Toggle Dropdown</span>
+                  </button>
+                  <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{% url 'update' book.id %}">تعديل</a>
+                    <a class="dropdown-item" href="{% url 'delete' book.id %}">حذف</a>
+                <!-- Button trigger modal -->
+                  </div>
+                </div>
+              {% if book.photo_book%}
+                <div style ='background: url({{book.photo_book.url}}); background-size: cover;' class="widget-user-header bg-info">
+              {%endif%}
+                  <h3 class="widget-user-username">{{book.title}}</h3>
+                  <h5 class="widget-user-desc">{{book.author}}</h5>
+                </div>
+                <div class="widget-user-image">
+              {% if book.photo_author%}
+                  <img style="width:100px; height: 100px;" class="img-circle elevation-2" src="{{book.photo_author.url}}" alt="User Avatar">
+              {%endif%}
+                </div>
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col-sm-4 border-right">
+                      <div class="description-block">
+                        <h5 class="description-header">{{book.pages}}</h5>
+                        <span class="description-text">صفحة</span>
+                      </div>
+                      <!-- /.description-block -->
+                    </div>
+                        <!-- /.col -->
+                    <div class="col-sm-4 border-right">
+                      <div class="description-block">
+                      {%if book.price%}
+                        <h5 class="description-header">${{book.price}}</h5>
+                        <span class="description-text">السعر</span>
+                      {%elif book.retail_price_day%}
+                        <h5 class="description-header">${{book.retail_price_day}}</h5>
+                        <span class="description-text">السعر ل اليوم</span>
+                      {%endif%}
+                      </div>
+                      <!-- /.description-block -->
+                    </div>
+                        <!-- /.col -->
+                    <div class="col-sm-4">
+                      <div class="description-block">
+                        <h5 class="description-header text-dark">{{book.status}}</h5>
+                        <span class="description-text">الحالة</span>
+                      </div>
+                      <!-- /.description-block -->
+                    </div>
+                        <!-- /.col -->
+                  </div>
+                      <!-- /.row -->
+                </div>
+                </div>
+                  <!-- /.widget-user -->
+              </div>
+              {% if forloop.counter|divisibleby:3 or forloop.last %}
+              </div> <!-- close row -->
+              {% endif %}
+          {% endfor %}
+          <!-- نهاية الكتاب -->
+
+          {% if not books %}
+          <div class="row">
+            <div class="col text-center">
+              <!--اضف صورة هنا في حالة عدم وجود كتب-->   
+            </div>
+          </div>
+          {% endif %}
+      </div>
+    </div>
+        <!-- /.container-fluid -->
+  </div>
+      <!-- /.content -->
+</div>
+{% endblock %}
+<!-- لا حاجة للعناصر المخفية بعد الآن -->
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    'use strict';
+
+    // ستايل الخطوط
+    const ticksStyle = {
+      color: '#495057',
+      font: { weight: 'bold' }
+    };
+
+    // بيانات من Django مباشرة
+    const soldProfit = {{ sold_profit|default:0 }};
+    const rentalProfit = {{ rental_profit|default:0 }};
+    const availableBooks = {{ avalible|default:0 }};
+    const soldBooks = {{ sold|default:0 }};
+    const rentalBooks = {{ rental|default:0 }};
+    
+    // عرض القيم في الصفحة
+    document.getElementById('soldtotals').textContent = soldProfit + ' $';
+    document.getElementById('rentedtotals').textContent = rentalProfit + ' $';
+    document.getElementById('totalsalarys').textContent = (soldProfit + rentalProfit) + ' $';
+
+    // 1. مخطط الأعمدة (أرباح البيع والإعارة)
+    const salesEl = document.getElementById('sales-chart');
+    if (salesEl) {
+      const ctx = salesEl.getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['بيع', 'إعارة'],
+          datasets: [{
+            label: 'الأرباح',
+            data: [ soldProfit, rentalProfit ],
+            backgroundColor: ['rgba(23, 162, 184, 0.7)', 'rgba(90, 98, 104, 0.7)'],
+            borderColor:    ['rgba(23, 162, 184, 0.9)', 'rgba(90, 98, 104, 0.9)']
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: v => '$' + v,
+                ...ticksStyle
+              },
+              grid: {
+                color: 'rgba(0,0,0,0.2)',
+                borderColor: 'transparent'
+              }
+            },
+            x: {
+              ticks: ticksStyle,
+              grid: { display: false }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: { mode: 'index', intersect: true }
+          }
+        }
+      });
+    }
+
+    // 2. مخطط الدائرة (عدد الكتب)
+    const visEl = document.getElementById('visitors-chart');
+    if (visEl) {
+      const ctx2 = visEl.getContext('2d');
+      new Chart(ctx2, {
+        type: 'pie',
+        data: {
+          labels: ['متاح', 'تم البيع', 'تم الإعارة'],
+          datasets: [{
+            data: [
+              availableBooks,
+              soldBooks,
+              rentalBooks
+            ],
+            backgroundColor: ['rgba(23, 162, 184, 0.7)', 'rgba(90, 98, 104, 0.7)', 'rgba(32, 201, 151, 0.7)'],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                color: '#000',
+                font: { size: 14, family: 'Source Sans Pro, Tajawal, sans-serif' },
+                usePointStyle: true,
+                padding: 10
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: ctx => `${ctx.label}: ${ctx.formattedValue} كتاب`
+              }
+            }
+          }
+        }
+      });
+    }
+
+  });
+</script>
+{% endblock %}

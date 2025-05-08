@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="direction: rtl;" class="wrapper">
+
+    <!-- Content Wrapper. Contains page content -->
+    <div   class="content-wrapper">
+      <!-- Content Header (Page header) -->
+  <div  class="card card-info">
+      <div class="card-header">
+        <h3 class="card-title">تعديل الكتاب</h3>
+      </div>
+      <!-- /.card-header -->
+      <!-- form start -->
+      <form  method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card-body">
+          
+        {{form}}
+          <small id='totalrente' class="form-text text-muted"></small>
+        </div>
+        <!-- /.card-body -->
+  
+        <div class="card-footer">
+          <button type="submit" class="btn" style="background-color: rgba(23, 162, 184, 0.7); color: white; border: none;">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  </div>
+{% endblock %}
