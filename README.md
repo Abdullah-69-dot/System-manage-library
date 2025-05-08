@@ -140,5 +140,8 @@ python manage.py migrate
 ## الاتصال
 
 إذا كان لديك أي أسئلة أو اقتراحات، يرجى التواصل عبر:
-- البريد الإلكتروني: your.email@example.com
-- GitHub: [yourusername](https://github.com/yourusername)
+- البريد الإلكتروني: abdullahmmmm64@gmail.com
+
+- GitHub: [Abdullah-69-dot
+](https://github.com/Abdullah-69-dot)
+)
